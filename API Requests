@@ -1,0 +1,11 @@
+Write a Channel Feed
+GET https://api.thingspeak.com/update?api_key=MV81GO1HLXQY1AQ5&field1=0
+
+Read a Channel Feed
+GET https://api.thingspeak.com/channels/2142500/feeds.json?results=2
+
+Read a Channel Field
+GET https://api.thingspeak.com/channels/2142500/fields/1.json?results=2
+
+Read Channel Status Updates
+GET https://api.thingspeak.com/channels/2142500/status.json
