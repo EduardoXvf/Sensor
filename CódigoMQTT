@@ -1,0 +1,50 @@
+
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <DHTesp.h>
+#include <PubSubClient.h>
+
+const char* ssid = "Wokwi-GUEST";
+const char* password = "";
+
+String serverName= "https://api.thingspeak.com/update?api_key=MV81GO1HLXQY1AQ5&field1=0";
+const int DHT_PIN = 15;
+DHTesp dhtSensor;
+WiFiClient espClient;
+PubSubClient mqttClient(espClient);
+
+void setup() {
+  Serial.begin(115200);
+  dhtSensor.setup(DHT_PIN, DHTesp::DHT22);
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting"); 
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+  
+  mqttClient.setServer("broker.hivemq.com",1883);
+  
+  String clientId = "Grupo_senai2023" + String(random(0xffff), HEX);
+  boolean isConected = mqttClient.connect(clientId.c_str());
+  Serial.println(isConected);
+
+  while(!isConected){
+    delay(500);
+
+     clientId = "Grupo_senai2023" + String(random(0xffff), HEX);
+     boolean isConected = mqttClient.connect(clientId.c_str());
+     Serial.println(".");
+  }
+  Serial.println("");
+  Serial.println("conectado ao broker");
+}
+
+
+void loop() {
+  TempAndHumidity  data = dhtSensor.getTempAndHumidity();
+  mqttClient.publish("Grupo_senai2023", "{\"temperatura\" : 18, \"umidade\" : 76}");
+}
